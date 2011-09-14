@@ -2,18 +2,10 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    >
-<TextView  
-    android:layout_width="fill_parent" 
-    android:layout_height="wrap_content" 
-    android:id="@+id/alert" android:text="@string/alert"/>
-<LinearLayout android:layout_height="wrap_content" android:layout_width="match_parent" android:id="@+id/linearLayout1">
-    <TextView android:layout_height="wrap_content" android:layout_width="wrap_content" android:textAppearance="?android:attr/textAppearanceLarge" android:text="First Bytes:" android:id="@+id/first"></TextView>
-    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/bytes_one"></TextView>
+    android:layout_height="fill_parent" android:background="@drawable/background" android:weightSum="1">
+<LinearLayout android:layout_height="wrap_content" android:layout_width="match_parent" android:id="@+id/linearLayout1" android:layout_gravity="center_horizontal" android:gravity="center_horizontal">
+    <ImageView android:layout_height="wrap_content" android:layout_width="wrap_content" android:src="@drawable/logo" android:id="@+id/imageView1"></ImageView>
 </LinearLayout>
-<LinearLayout android:layout_height="wrap_content" android:layout_width="match_parent" android:id="@+id/linearLayout2">
-    <TextView android:text="Second Bytes:" android:layout_height="wrap_content" android:layout_width="wrap_content" android:id="@+id/second" android:textAppearance="?android:attr/textAppearanceLarge"></TextView>
-    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/bytes_two"></TextView>
-</LinearLayout>
+<FrameLayout android:layout_height="wrap_content" android:id="@+id/frameLayout1" android:layout_width="match_parent" android:layout_weight="1.12"></FrameLayout>
+<ImageView android:layout_height="wrap_content" android:layout_width="wrap_content" android:src="@drawable/helper" android:id="@+id/imageView2"></ImageView>
 </LinearLayout>

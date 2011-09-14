@@ -20,10 +20,6 @@ public class Bartap extends Activity {
     private PendingIntent mPendingIntent;
     private IntentFilter[] mFilters;
     private String[][] mTechLists;
-    private TextView mText;
-    private TextView bytes_one;
-    private TextView bytes_two;
-    private int mCount = 0;
 	// Hex help
 	private static final byte[] HEX_CHAR_TABLE = { (byte) '0', (byte) '1',
 			(byte) '2', (byte) '3', (byte) '4', (byte) '5', (byte) '6',
@@ -37,9 +33,6 @@ public class Bartap extends Activity {
         setContentView(R.layout.main);
 
 		mAdapter = NfcAdapter.getDefaultAdapter(this);
-		bytes_one = (TextView) findViewById(R.id.bytes_one);
-		bytes_two = (TextView) findViewById(R.id.bytes_two);
-		mText = (TextView) findViewById(R.id.alert);
 		// Create a generic PendingIntent that will be deliver to this activity.
 		// The NFC stack
 		// will fill in the intent with the details of the discovered tag before
@@ -72,7 +65,6 @@ public class Bartap extends Activity {
 			// status_Data.setText("Discovered tag with intent: " + intent);
 			Tag tagFromIntent = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
 			MifareClassic mfc = MifareClassic.get(tagFromIntent);
-			mText.setText("Scanning... ");
 			byte[] data;
 			try {
 				mfc.connect();
@@ -86,18 +78,6 @@ public class Bartap extends Activity {
 					cardData = getHexString(data, data.length);
 					
 					startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("http://bartap.herokuapp.com/tags/" + cardData))); 
-//
-//					if (cardData != null) {						
-//						bytes_one.setText(cardData);
-//					}
-//					
-//					// reading Block 0 /Sector 1
-//					data = mfc.readBlock(1);
-//					cardData = getHexString(data, data.length);
-//
-//					if (cardData != null) {
-//						bytes_two.setText(cardData);
-//					}
 				} 
 
 			} catch (IOException e) {
