@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  android:orientation="vertical"
+  android:layout_width="fill_parent"
+  android:layout_height="fill_parent">
+<Button 
+	android:id="@+id/back_to_main" 
+	android:layout_width="fill_parent"
+	android:layout_height="wrap_content"
+	android:gravity="center_horizontal"
+	android:text="Back to Main" 
+	android:textStyle="bold" 
+	android:textSize="30px" 
+	android:typeface="normal" android:drawablePadding="5px" android:paddingLeft="50px" android:drawableLeft="@drawable/searching"/>
+<WebView  
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:id="@+id/webview"
+	android:layout_width="fill_parent" 
+	android:layout_height="match_parent"
+/>
+</LinearLayout>
