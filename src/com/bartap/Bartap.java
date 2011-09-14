@@ -3,16 +3,19 @@ package com.bartap;
 import java.io.IOException;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.PendingIntent;
 import android.content.*;
 import android.content.IntentFilter.MalformedMimeTypeException;
 import android.net.Uri;
 import android.nfc.*;
 import android.nfc.tech.MifareClassic;
+import android.nfc.tech.MifareUltralight;
 import android.nfc.tech.NfcF;
+import android.nfc.tech.TagTechnology;
 import android.os.Bundle;
 import android.util.Log;
-import android.widget.TextView;
+import android.widget.Toast;
 
 public class Bartap extends Activity {
 	
@@ -20,6 +23,7 @@ public class Bartap extends Activity {
     private PendingIntent mPendingIntent;
     private IntentFilter[] mFilters;
     private String[][] mTechLists;
+    AlertDialog.Builder builder;
 	// Hex help
 	private static final byte[] HEX_CHAR_TABLE = { (byte) '0', (byte) '1',
 			(byte) '2', (byte) '3', (byte) '4', (byte) '5', (byte) '6',
@@ -33,6 +37,7 @@ public class Bartap extends Activity {
         setContentView(R.layout.main);
 
 		mAdapter = NfcAdapter.getDefaultAdapter(this);
+		
 		// Create a generic PendingIntent that will be deliver to this activity.
 		// The NFC stack
 		// will fill in the intent with the details of the discovered tag before
@@ -40,19 +45,6 @@ public class Bartap extends Activity {
 		// this activity.
 		mPendingIntent = PendingIntent.getActivity(this, 0, new Intent(this,
 				getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
-		// Setup an intent filter for all MIME based dispatches
-		IntentFilter ndef = new IntentFilter(NfcAdapter.ACTION_TECH_DISCOVERED);
-
-		try {
-			ndef.addDataType("*/*");
-		} catch (MalformedMimeTypeException e) {
-			throw new RuntimeException("fail", e);
-		}
-		mFilters = new IntentFilter[] { ndef, };
-
-		// Setup a tech list for all NfcF tags
-		mTechLists = new String[][] { new String[] { MifareClassic.class
-				.getName() } };
 
 		Intent intent = getIntent();
 		resolveIntent(intent);
@@ -61,10 +53,11 @@ public class Bartap extends Activity {
 	void resolveIntent(Intent intent) {
 		// Parse the intent
 		String action = intent.getAction();
-		if (NfcAdapter.ACTION_TECH_DISCOVERED.equals(action)) {
+		if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(action)) {
 			// status_Data.setText("Discovered tag with intent: " + intent);
 			Tag tagFromIntent = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
 			MifareClassic mfc = MifareClassic.get(tagFromIntent);
+			MifareUltralight mfl = MifareUltralight.get(tagFromIntent);
 			byte[] data;
 			try {
 				mfc.connect();
@@ -78,10 +71,23 @@ public class Bartap extends Activity {
 					cardData = getHexString(data, data.length);
 					
 					startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("http://bartap.herokuapp.com/tags/" + cardData))); 
-				} 
+				}
+			} catch (Exception e) {
+				try {
+					mfl.connect();
+					String cardData = null;
+					// Authenticating and reading Block 0 /Sector 1
+					data = mfl.readPages(1);
+					cardData = getHexString(data, data.length);
+					
+					startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("http://bartap.herokuapp.com/tags/" + cardData)));
+				} catch (Exception xx) {
+					Context context = getApplicationContext();
+					CharSequence text = "I couldn't figure out your card doggg";
+					int duration = Toast.LENGTH_LONG;
 
-			} catch (IOException e) {
-				Log.e("LOL FUXED", e.getLocalizedMessage());
+					Toast.makeText(context, text, duration).show();
+				}
 			}
 		} 
 	}
@@ -107,8 +113,7 @@ public class Bartap extends Activity {
 	@Override
 	public void onResume() {
 		super.onResume();
-		mAdapter.enableForegroundDispatch(this, mPendingIntent, mFilters,
-				mTechLists);
+		mAdapter.enableForegroundDispatch(this, mPendingIntent, null, null);
 	}
 
 	@Override
