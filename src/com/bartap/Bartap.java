@@ -1,18 +1,13 @@
 package com.bartap;
 
-import java.io.IOException;
-
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.PendingIntent;
 import android.content.*;
-import android.content.IntentFilter.MalformedMimeTypeException;
 import android.net.Uri;
 import android.nfc.*;
 import android.nfc.tech.MifareClassic;
 import android.nfc.tech.MifareUltralight;
-import android.nfc.tech.NfcF;
-import android.nfc.tech.TagTechnology;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
@@ -21,8 +16,6 @@ public class Bartap extends Activity {
 	
     private NfcAdapter mAdapter;
     private PendingIntent mPendingIntent;
-    private IntentFilter[] mFilters;
-    private String[][] mTechLists;
     AlertDialog.Builder builder;
 	// Hex help
 	private static final byte[] HEX_CHAR_TABLE = { (byte) '0', (byte) '1',
