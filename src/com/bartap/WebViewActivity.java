@@ -24,8 +24,8 @@ public class WebViewActivity extends Activity {
 
         mWebView.setVerticalScrollBarEnabled(false);
         mWebView.setHorizontalScrollBarEnabled(false);
-	    
-	    mWebView.loadUrl("http://bartapapp.com/tags/2A1E348A8A8804004885145965804710");
+	    Bundle extras = getIntent().getExtras();
+	    mWebView.loadUrl(extras.getString("URL"));
 	    
 	    mWebView.setWebViewClient(new HelloWebViewClient());
 	    

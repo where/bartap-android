@@ -21,6 +21,7 @@ import android.nfc.tech.MifareClassic;
 import android.nfc.tech.MifareUltralight;
 import android.os.Bundle;
 import android.util.Log;
+import android.webkit.WebView;
 import android.widget.TextView;
 
 import com.google.common.base.Charsets;
@@ -114,6 +115,7 @@ public class Bartap extends Activity {
 		}
 	    
 	    prompt.setText("SUCCESS!!!");
+	    
 	}
 	
 	void readMifareClassic(Tag tagFromIntent) throws IOException {
@@ -149,6 +151,8 @@ public class Bartap extends Activity {
 	    }
 	    
 	    prompt.setText("SUCCESS!!!");
+	    Intent myIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(cardData));
+        startActivityForResult(myIntent, 0);
 	}
 	
 	public static String getHexString(byte[] raw, int len) {
