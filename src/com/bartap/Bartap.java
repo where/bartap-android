@@ -1,29 +1,34 @@
 package com.bartap;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.PendingIntent;
-import android.content.*;
-import android.content.IntentFilter.MalformedMimeTypeException;
-import android.net.Uri;
-import android.nfc.*;
+import android.content.Intent;
+import android.nfc.FormatException;
+import android.nfc.NdefMessage;
+import android.nfc.NdefRecord;
+import android.nfc.NfcAdapter;
+import android.nfc.Tag;
 import android.nfc.tech.MifareClassic;
 import android.nfc.tech.MifareUltralight;
-import android.nfc.tech.NfcF;
-import android.nfc.tech.TagTechnology;
+import android.nfc.tech.NdefFormatable;
 import android.os.Bundle;
 import android.util.Log;
-import android.widget.Toast;
+import android.widget.TextView;
+
+import com.google.common.base.Charsets;
 
 public class Bartap extends Activity {
 	
     private NfcAdapter mAdapter;
     private PendingIntent mPendingIntent;
-    private IntentFilter[] mFilters;
-    private String[][] mTechLists;
-    AlertDialog.Builder builder;
+    private TextView card_id;
+    private TextView prompt;
+    private boolean tapped;
+    private String cardData;
+    byte[] data = new byte[0];
 	// Hex help
 	private static final byte[] HEX_CHAR_TABLE = { (byte) '0', (byte) '1',
 			(byte) '2', (byte) '3', (byte) '4', (byte) '5', (byte) '6',
@@ -37,6 +42,9 @@ public class Bartap extends Activity {
         setContentView(R.layout.main);
 
 		mAdapter = NfcAdapter.getDefaultAdapter(this);
+		prompt = (TextView) findViewById(R.id.prompt);
+		card_id = (TextView) findViewById(R.id.card_id);
+		tapped = false;
 		
 		// Create a generic PendingIntent that will be deliver to this activity.
 		// The NFC stack
@@ -54,42 +62,88 @@ public class Bartap extends Activity {
 		// Parse the intent
 		String action = intent.getAction();
 		if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(action)) {
-			// status_Data.setText("Discovered tag with intent: " + intent);
 			Tag tagFromIntent = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
-			MifareClassic mfc = MifareClassic.get(tagFromIntent);
-			MifareUltralight mfl = MifareUltralight.get(tagFromIntent);
-			byte[] data;
-			try {
-				mfc.connect();
-				boolean auth = false;
-				String cardData = null;
-				// Authenticating and reading Block 0 /Sector 1
-				auth = mfc.authenticateSectorWithKeyA(0,
-						MifareClassic.KEY_DEFAULT);
-				if (auth) {
-					data = mfc.readBlock(0);
-					cardData = getHexString(data, data.length);
-					
-					startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("http://bartap.herokuapp.com/tags/" + cardData))); 
-				}
-			} catch (Exception e) {
+			if (!tapped) {
 				try {
-					mfl.connect();
-					String cardData = null;
-					// Authenticating and reading Block 0 /Sector 1
-					data = mfl.readPages(1);
-					cardData = getHexString(data, data.length);
-					
-					startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("http://bartap.herokuapp.com/tags/" + cardData)));
-				} catch (Exception xx) {
-					Context context = getApplicationContext();
-					CharSequence text = "I couldn't figure out your card doggg";
-					int duration = Toast.LENGTH_LONG;
-
-					Toast.makeText(context, text, duration).show();
+					readMifareClassic(tagFromIntent);
+				} catch (Exception e) {
+					try {
+						readMifareUltralight(tagFromIntent);
+					} catch (Exception xx) {
+						prompt.setText("Shit");
+					}
+				}
+			} else {
+				try {
+					writeMifareClassic(cardData, tagFromIntent);
+				} catch (Exception e) {
+					Tag tagTwoFuckYou = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
+					new Thread(new WriteRunner(cardData, tagTwoFuckYou)).run();
 				}
 			}
 		} 
+	}
+	
+	void readMifareUltralight(Tag tagFromIntent) throws IOException {
+		MifareUltralight mfl = MifareUltralight.get(tagFromIntent);
+		mfl.connect();
+		data = mfl.readPages(1);
+		cardData = "http://bartapapp.com/tags/" + getHexString(data, data.length);
+		tapped = true;
+		prompt.setText("Tap again to save URL!"); 
+	}
+	
+	void writeMifareUltralight(String cardData, Tag tagFromIntent) throws IOException {
+		NdefFormatable tag = NdefFormatable.get(tagFromIntent);
+		final byte[] textBytes = cardData.getBytes(Charsets.UTF_8);
+		NdefRecord record = new NdefRecord(NdefRecord.TNF_ABSOLUTE_URI, NdefRecord.RTD_URI, new byte[0], textBytes);
+	
+	    NdefRecord[] records = {record};
+	    NdefMessage message = new NdefMessage(records);
+	    tag.connect();
+	    try {
+			tag.format(message);
+		} catch (FormatException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	    
+	    prompt.setText("SUCCESS!!!");
+	}
+	
+	void readMifareClassic(Tag tagFromIntent) throws IOException {
+		MifareClassic mfc = MifareClassic.get(tagFromIntent);
+		mfc.connect();
+		boolean auth = false;
+		// Authenticating and reading Block 0 /Sector 1
+		auth = mfc.authenticateSectorWithKeyA(0,
+				MifareClassic.KEY_DEFAULT);
+		if (auth) {
+			data = mfc.readBlock(0);
+			cardData = "http://bartapapp.com/tags/" + getHexString(data, data.length);
+			tapped = true;
+			prompt.setText("Tap again to save URL!");
+		} else {
+			prompt.setText("Fuck");
+		}
+	}
+	
+	void writeMifareClassic(String cardData, Tag tagFromIntent) throws Exception {
+		NdefFormatable tag = NdefFormatable.get(tagFromIntent);
+		final byte[] textBytes = cardData.getBytes(Charsets.UTF_8);
+		NdefRecord record = new NdefRecord(NdefRecord.TNF_ABSOLUTE_URI, NdefRecord.RTD_URI, data, textBytes);
+	
+	    NdefRecord[] records = {record};
+	    NdefMessage message = new NdefMessage(records);
+	    try {
+			tag.connect();
+		    tag.format(message);
+	    } catch (Exception e) {
+	    	tag.close();
+	    	throw e;
+	    }
+	    
+	    prompt.setText("SUCCESS!!!");
 	}
 	
 	public static String getHexString(byte[] raw, int len) {
@@ -128,4 +182,22 @@ public class Bartap extends Activity {
 		mAdapter.disableForegroundDispatch(this);
 	}
 
+	public class WriteRunner implements Runnable {
+		private String cardData;
+		private Tag tagFromIntent;
+		
+		public WriteRunner(String mCardData, Tag mTagFromIntent) {
+			cardData = mCardData;
+			tagFromIntent = mTagFromIntent;
+		}
+		
+		public void run() {
+			try {
+				writeMifareUltralight(cardData, tagFromIntent);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
 }

@@ -6,6 +6,8 @@
 <LinearLayout android:layout_height="wrap_content" android:layout_width="match_parent" android:id="@+id/linearLayout1" android:layout_gravity="center_horizontal" android:gravity="center_horizontal">
     <ImageView android:layout_height="wrap_content" android:layout_width="wrap_content" android:src="@drawable/logo" android:id="@+id/imageView1"></ImageView>
 </LinearLayout>
-<FrameLayout android:layout_height="wrap_content" android:id="@+id/frameLayout1" android:layout_width="match_parent" android:layout_weight="1.12"></FrameLayout>
-<ImageView android:layout_height="wrap_content" android:layout_width="wrap_content" android:src="@drawable/helper" android:id="@+id/imageView2"></ImageView>
+<RelativeLayout android:layout_height="wrap_content" android:layout_width="match_parent" android:id="@+id/relativeLayout1" android:layout_weight="0.93">
+    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:textAppearance="?android:attr/textAppearanceLarge" android:layout_alignParentTop="true" android:layout_centerHorizontal="true" android:layout_marginTop="16dp" android:text="Tap card to load ID" android:id="@+id/prompt"></TextView>
+    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:textAppearance="?android:attr/textAppearanceLarge" android:layout_below="@+id/prompt" android:layout_centerHorizontal="true" android:layout_marginTop="42dp" android:id="@+id/card_id"></TextView>
+</RelativeLayout>
 </LinearLayout>
