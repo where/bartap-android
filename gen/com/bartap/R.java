@@ -12,19 +12,23 @@ public final class R {
     }
     public static final class drawable {
         public static final int background=0x7f020000;
-        public static final int helper=0x7f020001;
-        public static final int icon=0x7f020002;
-        public static final int logo=0x7f020003;
-        public static final int searching=0x7f020004;
+        public static final int coaster=0x7f020001;
+        public static final int helper=0x7f020002;
+        public static final int icon=0x7f020003;
+        public static final int logo=0x7f020004;
+        public static final int searching=0x7f020005;
+        public static final int wood=0x7f020006;
+        public static final int wood2=0x7f020007;
     }
     public static final class id {
-        public static final int back_to_main=0x7f060005;
+        public static final int back_to_main=0x7f060006;
         public static final int card_id=0x7f060004;
         public static final int imageView1=0x7f060001;
         public static final int linearLayout1=0x7f060000;
         public static final int prompt=0x7f060003;
         public static final int relativeLayout1=0x7f060002;
-        public static final int webview=0x7f060006;
+        public static final int scan=0x7f060005;
+        public static final int webview=0x7f060007;
     }
     public static final class layout {
         public static final int main=0x7f030000;

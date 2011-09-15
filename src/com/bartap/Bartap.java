@@ -1,11 +1,13 @@
 package com.bartap;
 
 import java.io.IOException;
-import java.util.Arrays;
 
 import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.net.Uri;
 import android.nfc.FormatException;
 import android.nfc.NdefMessage;
 import android.nfc.NdefRecord;
@@ -14,19 +16,15 @@ import android.nfc.Tag;
 import android.nfc.tech.MifareClassic;
 import android.nfc.tech.MifareUltralight;
 import android.nfc.tech.NdefFormatable;
-import android.content.*;
-import android.net.Uri;
-import android.nfc.*;
-import android.nfc.tech.MifareClassic;
-import android.nfc.tech.MifareUltralight;
 import android.os.Bundle;
 import android.util.Log;
-import android.webkit.WebView;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.google.common.base.Charsets;
 
 public class Bartap extends Activity {
+	Button scanButton;
 	
     private NfcAdapter mAdapter;
     private PendingIntent mPendingIntent;
@@ -52,6 +50,10 @@ public class Bartap extends Activity {
 		card_id = (TextView) findViewById(R.id.card_id);
 		tapped = false;
 		
+		scanButton = (Button)findViewById(R.id.scan);
+		scanButton.setText("Scanning for Coaster");
+		scanButton.getBackground().setColorFilter(Color.CYAN, PorterDuff.Mode.MULTIPLY);
+		
 		// Create a generic PendingIntent that will be deliver to this activity.
 		// The NFC stack
 		// will fill in the intent with the details of the discovered tag before
@@ -59,7 +61,7 @@ public class Bartap extends Activity {
 		// this activity.
 		mPendingIntent = PendingIntent.getActivity(this, 0, new Intent(this,
 				getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
-
+		
 		Intent intent = getIntent();
 		resolveIntent(intent);
     }
@@ -123,6 +125,11 @@ public class Bartap extends Activity {
 		mfc.connect();
 		boolean auth = false;
 		// Authenticating and reading Block 0 /Sector 1
+/*		
+		scanButton = (Button)findViewById(R.id.scan);
+		scanButton.setText("Scanning Card");
+		scanButton.getBackground().setColorFilter(Color.CYAN, PorterDuff.Mode.MULTIPLY);
+*/		
 		auth = mfc.authenticateSectorWithKeyA(0,
 				MifareClassic.KEY_DEFAULT);
 		if (auth) {
@@ -130,6 +137,12 @@ public class Bartap extends Activity {
 			cardData = "http://bartapapp.com/tags/" + getHexString(data, data.length);
 			tapped = true;
 			prompt.setText("Tap again to save URL!");
+			
+//			android.os.
+
+			scanButton.setText("Waiting to Write");
+			scanButton.getBackground().setColorFilter(Color.GREEN, PorterDuff.Mode.MULTIPLY);
+			
 		} else {
 			prompt.setText("Fuck");
 		}
