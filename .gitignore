@@ -1,3 +1,15 @@
 bin/**
 
 bin/com/bartap/R$layout.class
+
+bin/com/bartap/R$xml.class
+
+bin/com/bartap/R$string.class
+
+bin/com/bartap/R$layout.class
+
+bin/com/bartap/R$id.class
+
+bin/com/bartap/R$drawable.class
+
+bin/com/bartap/Bartap.class
