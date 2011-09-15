@@ -2,13 +2,11 @@ package com.bartap;
 
 import java.io.IOException;
 
-import android.R;
 import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
-import android.media.MediaPlayer;
 import android.net.Uri;
 import android.nfc.FormatException;
 import android.nfc.NdefMessage;
@@ -26,7 +24,6 @@ import android.widget.TextView;
 import com.google.common.base.Charsets;
 
 public class Bartap extends Activity {
-//    private MediaPlayer mMediaPlayer;
 	Button scanButton;
 	
     private NfcAdapter mAdapter;
@@ -55,13 +52,8 @@ public class Bartap extends Activity {
 		
 		scanButton = (Button)findViewById(R.id.scan);
 		scanButton.setText("Scanning for Coaster");
-		scanButton.getBackground().setColorFilter(Color.YELLOW, PorterDuff.Mode.MULTIPLY);
+		scanButton.getBackground().setColorFilter(Color.CYAN, PorterDuff.Mode.MULTIPLY);
 		
-//		mMediaPlayer = MediaPlayer.create(this, R.raw.);
-//	    mMediaPlayer.setLooping(false);
-//	    Log.e("beep","started0");
-//	    mMediaPlayer.start();
-
 		// Create a generic PendingIntent that will be deliver to this activity.
 		// The NFC stack
 		// will fill in the intent with the details of the discovered tag before
@@ -86,7 +78,7 @@ public class Bartap extends Activity {
 					try {
 						readMifareUltralight(tagFromIntent);
 					} catch (Exception xx) {
-						prompt.setText("Scan a MiFare Classic");
+						prompt.setText("Shit");
 					}
 				}
 			} else {
@@ -133,7 +125,11 @@ public class Bartap extends Activity {
 		mfc.connect();
 		boolean auth = false;
 		// Authenticating and reading Block 0 /Sector 1
-		
+/*		
+		scanButton = (Button)findViewById(R.id.scan);
+		scanButton.setText("Scanning Card");
+		scanButton.getBackground().setColorFilter(Color.CYAN, PorterDuff.Mode.MULTIPLY);
+*/		
 		auth = mfc.authenticateSectorWithKeyA(0,
 				MifareClassic.KEY_DEFAULT);
 		if (auth) {
@@ -142,11 +138,13 @@ public class Bartap extends Activity {
 			tapped = true;
 			prompt.setText("Tap again to save URL!");
 			
+//			android.os.
+
 			scanButton.setText("Waiting to Write");
-			scanButton.getBackground().setColorFilter(Color.MAGENTA, PorterDuff.Mode.MULTIPLY);
+			scanButton.getBackground().setColorFilter(Color.GREEN, PorterDuff.Mode.MULTIPLY);
 			
 		} else {
-			prompt.setText("Miss, Scan again to save URL!");
+			prompt.setText("Fuck");
 		}
 	}
 	
